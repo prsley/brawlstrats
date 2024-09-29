@@ -9,8 +9,13 @@
 </head>
 <body>
 
+    <nav class = "navbar">
+        <a href="index.html">Home</a>
+        <a href="contact.html">Contact Us</a>
+    </nav>
+
     <h1 id="welcomeMessage">Welcome, Player!</h1>
-    <p>Select map out of the current rotation:</p>
+    <p class="rotationtext">Select map out of the current rotation:</p>
     <!-- Map Selection Icons -->
     <div class="map-selection" id="mapSelection">
         <!-- Map icons will be dynamically added here -->
@@ -58,6 +63,8 @@ fetch('http://localhost:3000/api/events/rotation')
             const nameLabel = document.createElement('div');
             nameLabel.classList.add('map-name');
             nameLabel.textContent = mapName; // Set the map name below the image
+
+            nameLabel.style.fontFamily = 'Elronmonospace';
 
             mapIcon.appendChild(img);
             mapIcon.appendChild(nameLabel);

@@ -263,7 +263,7 @@ input[type=text]:focus {
     border: 3px solid #ff5050;
 }
 
-input[type=submit] {
+button {
     width: 10%;
     background-color: #ff5050;
     color: white;

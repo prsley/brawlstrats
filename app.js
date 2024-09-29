@@ -5,7 +5,10 @@ import express from 'express';
 import  fetch from 'node-fetch'; // Ensure you have node-fetch installed
 import bodyParser from 'body-parser';
 
+//import * as tf from '@tensorflow/tfjs-node';
+
 const app = express();
+// app.use(cors)
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -16,7 +19,7 @@ app.use(express.static('public')); // Serve static files from the 'public' direc
 app.get('/api/player/:tag', async (req, res) => {
     const playerTag = req.params.tag;
     const url = `https://api.brawlstars.com/v1/players/%23${playerTag}`;
-    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjU3M2EwNzQ2LWRlMGQtNGViNy04MTM5LTQxMmYzYjU4OGRkNyIsImlhdCI6MTcyNzU3NTc1OCwic3ViIjoiZGV2ZWxvcGVyL2Y1N2IyMGRjLTA1ZDYtODBmMy00ZGU2LWRkMGY0OWI3NmJkMSIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTY1LjkxLjEzLjIwMSJdLCJ0eXBlIjoiY2xpZW50In1dfQ.te-3gHzZ1wGL2tJrSmP5a6uHGhCSJCn0vIcb70ZZSVg1sry_l8AC9ahStfRel1iV5DxQDHFg5FJz88Er0PCKdg';
+    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImFjMDU5ZjMxLWRmYmItNGRhYS05ODQ4LTE2NzAzOGYxYjA2YyIsImlhdCI6MTcyNzUzOTMzOSwic3ViIjoiZGV2ZWxvcGVyL2I0YmNkNjJhLWE4N2YtMjliMS05ZGMzLTRjNTY2NzJkZmEyYSIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTY1LjkxLjEzLjI0OCJdLCJ0eXBlIjoiY2xpZW50In1dfQ.ejtYQlgw6WafsOPlIZl4ZFCUlnbSpUbxc0762PQMnPsBeq58VUioU_5YWB-JjAIc_H3v_ET9eYWAefvT5ofUDQ";
 
     try {
         const response = await fetch(url, {
@@ -41,7 +44,7 @@ app.get('/api/player/:tag', async (req, res) => {
 
 app.get('/api/events/rotation', async (req, res) => {
     const url = 'https://api.brawlstars.com/v1/events/rotation';
-    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6Ijg0MDE0ZjI4LTBmNzMtNDRhYy1iMDc3LTlmYTAwODVmNjkwZSIsImlhdCI6MTcyNzU4ODU2Mywic3ViIjoiZGV2ZWxvcGVyL2Y1N2IyMGRjLTA1ZDYtODBmMy00ZGU2LWRkMGY0OWI3NmJkMSIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTY1LjkxLjEzLjIwMSIsIjE5OC45MC4xMDkuMTE2Il0sInR5cGUiOiJjbGllbnQifV19.1ONmPvru7-vJeV_kgTxI8FeRkfSOpo778Rpw4TD8FQnQ6V2Tiue-6VdPlQRfWZd8u7pTUaP27dc99hZ7WH2y3w'; // Replace with your actual API key
+    const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImFjMDU5ZjMxLWRmYmItNGRhYS05ODQ4LTE2NzAzOGYxYjA2YyIsImlhdCI6MTcyNzUzOTMzOSwic3ViIjoiZGV2ZWxvcGVyL2I0YmNkNjJhLWE4N2YtMjliMS05ZGMzLTRjNTY2NzJkZmEyYSIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTY1LjkxLjEzLjI0OCJdLCJ0eXBlIjoiY2xpZW50In1dfQ.ejtYQlgw6WafsOPlIZl4ZFCUlnbSpUbxc0762PQMnPsBeq58VUioU_5YWB-JjAIc_H3v_ET9eYWAefvT5ofUDQ";
 
     try {
         const response = await fetch(url, {
@@ -78,7 +81,7 @@ app.post('/api/select-map', (req, res) => {
 // Endpoint to fetch brawlers
 app.get('/api/brawlers', async (req, res) => {
     const url = 'https://api.brawlstars.com/v1/brawlers';
-    const token ='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6Ijg0MDE0ZjI4LTBmNzMtNDRhYy1iMDc3LTlmYTAwODVmNjkwZSIsImlhdCI6MTcyNzU4ODU2Mywic3ViIjoiZGV2ZWxvcGVyL2Y1N2IyMGRjLTA1ZDYtODBmMy00ZGU2LWRkMGY0OWI3NmJkMSIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTY1LjkxLjEzLjIwMSIsIjE5OC45MC4xMDkuMTE2Il0sInR5cGUiOiJjbGllbnQifV19.1ONmPvru7-vJeV_kgTxI8FeRkfSOpo778Rpw4TD8FQnQ6V2Tiue-6VdPlQRfWZd8u7pTUaP27dc99hZ7WH2y3w'; // Replace with your actual API key
+    const token ='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImFjMDU5ZjMxLWRmYmItNGRhYS05ODQ4LTE2NzAzOGYxYjA2YyIsImlhdCI6MTcyNzUzOTMzOSwic3ViIjoiZGV2ZWxvcGVyL2I0YmNkNjJhLWE4N2YtMjliMS05ZGMzLTRjNTY2NzJkZmEyYSIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTY1LjkxLjEzLjI0OCJdLCJ0eXBlIjoiY2xpZW50In1dfQ.ejtYQlgw6WafsOPlIZl4ZFCUlnbSpUbxc0762PQMnPsBeq58VUioU_5YWB-JjAIc_H3v_ET9eYWAefvT5ofUDQ'; // Replace with your actual API key
     try {
         const response = await fetch(url, {
             method: 'GET',
@@ -105,6 +108,15 @@ app.get('/api/brawlers', async (req, res) => {
         console.error('Error fetching brawlers:', error);
         res.status(500).json({ error: 'Failed to fetch brawlers' });
     }
+});
+
+app.post('/api/predict', (req, res) => {
+    const { team1, team2, event_map } = req.body;
+
+    const randomOutcome = Math.random() < 0.5 ? 'Team 1 Wins' : 'Team 2 Wins';
+    
+
+    res.json({ outcome: randomOutcome });
 });
 
 // Start the server

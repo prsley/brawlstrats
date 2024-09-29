@@ -1,133 +1,101 @@
-const tf = require('@tensorflow/tfjs-node');
-const Papa = require('papaparse');
+const express = require('express');
+const bodyParser = require('body-parser');
+const tf = require('@tensorflow/tfjs');
+const csv = require('csv-parser');
 const fs = require('fs');
+const { StandardScaler } = require('scikitjs');
 
-// Load the data
-const rawData = fs.readFileSync('raw_battlelogs.csv', 'utf8');
-let df = Papa.parse(rawData, { header: true, dynamicTyping: true }).data;
+const app = express();
+app.use(bodyParser.json());
 
-// Convert battle_result to binary
-df = df.map(row => ({
-    ...row,
-    battle_result: row.battle_result === 'victory' ? 1 : 0
-}));
+let model;
+let features = [];
 
-// Function to safely evaluate the string representation of battle_teams
-function safeEval(x) {
-    if (x === null || x === undefined) {
-        return null;
-    }
+// Load and preprocess the data
+const loadData = () => {
+    const results = [];
+    fs.createReadStream('raw_battlelogs.csv')
+        .pipe(csv())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+            const df = results.map(row => ({
+                ...row,
+                battle_result: row.battle_result === 'victory' ? 1 : 0,
+                battle_teams: safeEval(row.battle_teams)
+            })).filter(row => row.battle_teams);
+
+            // Extract brawler IDs for each team
+            df.forEach(row => {
+                const teams = row.battle_teams;
+                if (teams.length > 0) {
+                    row.battle_team1_brawler1 = teams[0][0].brawler.id || null;
+                    row.battle_team1_brawler2 = teams[0][1].brawler.id || null;
+                    row.battle_team1_brawler3 = teams[0][2].brawler.id || null;
+                }
+                if (teams.length > 1) {
+                    row.battle_team2_brawler1 = teams[1][0].brawler.id || null;
+                    row.battle_team2_brawler2 = teams[1][1].brawler.id || null;
+                    row.battle_team2_brawler3 = teams[1][2].brawler.id || null;
+                }
+            });
+
+            // Prepare features for training
+            features = ['battle_team1_brawler1', 'battle_team1_brawler2', 'battle_team1_brawler3',
+                'battle_team2_brawler1', 'battle_team2_brawler2', 'battle_team2_brawler3'];
+
+            const X = df.map(row => features.map(f => row[f]));
+            const y = df.map(row => row.battle_result);
+
+            // Split the data
+            const [X_train, X_test, y_train, y_test] = splitData(X, y, 0.2);
+            const scaler = new StandardScaler();
+            const X_train_scaled = scaler.fit_transform(X_train);
+            const X_test_scaled = scaler.transform(X_test);
+
+            // Build the Neural Network Model
+            model = tf.sequential();
+            model.add(tf.layers.dense({ units: 64, activation: 'relu', inputShape: [X_train_scaled.shape[1]] }));
+            model.add(tf.layers.dense({ units: 32, activation: 'relu' }));
+            model.add(tf.layers.dense({ units: 1, activation: 'sigmoid' }));
+
+            // Compile the model
+            model.compile({ optimizer: 'adam', loss: 'binaryCrossentropy', metrics: ['accuracy'] });
+
+            // Train the model
+            await model.fit(tf.tensor2d(X_train_scaled), tf.tensor1d(y_train), { epochs: 10, batchSize: 32 });
+            const evalResult = model.evaluate(tf.tensor2d(X_test_scaled), tf.tensor1d(y_test));
+            evalResult[1].print();  // Print accuracy
+        });
+};
+
+// Utility to safely evaluate string representations
+const safeEval = (x) => {
+    if (!x) return null;
     try {
         return JSON.parse(x);
-    } catch (error) {
+    } catch (e) {
         return null;
     }
-}
+};
 
-// Extracting brawler IDs for each team
-df = df.map(row => {
-    const teams = safeEval(row.battle_teams);
-    return {
-        ...row,
-        battle_team1_brawler1: teams && teams[0] && teams[0][0] ? teams[0][0].brawler.id : null,
-        battle_team1_brawler2: teams && teams[0] && teams[0][1] ? teams[0][1].brawler.id : null,
-        battle_team1_brawler3: teams && teams[0] && teams[0][2] ? teams[0][2].brawler.id : null,
-        battle_team2_brawler1: teams && teams[1] && teams[1][0] ? teams[1][0].brawler.id : null,
-        battle_team2_brawler2: teams && teams[1] && teams[1][1] ? teams[1][1].brawler.id : null,
-        battle_team2_brawler3: teams && teams[1] && teams[1][2] ? teams[1][2].brawler.id : null
-    };
-});
+// Function to split data into training and test sets
+const splitData = (X, y, testSize) => {
+    const total = X.length;
+    const testCount = Math.floor(total * testSize);
+    const trainCount = total - testCount;
 
-// One-hot encoding for categorical variables
-const categoricalColumns = ['event_mode', 'event_map', 'battle_mode', 'battle_type', 'battle_level_name'];
-categoricalColumns.forEach(column => {
-    const uniqueValues = [...new Set(df.map(row => row[column]))];
-    uniqueValues.slice(1).forEach(value => {
-        const columnName = `${column}_${value}`;
-        df = df.map(row => ({
-            ...row,
-            [columnName]: row[column] === value ? 1 : 0
-        }));
-    });
-});
+    const X_train = X.slice(0, trainCount);
+    const X_test = X.slice(trainCount);
+    const y_train = y.slice(0, trainCount);
+    const y_test = y.slice(trainCount);
 
-// Select relevant features for the model
-const features = [
-    'battle_team1_brawler1', 'battle_team1_brawler2', 'battle_team1_brawler3',
-    'battle_team2_brawler1', 'battle_team2_brawler2', 'battle_team2_brawler3'
-].concat(Object.keys(df[0]).filter(col => 
-    col.startsWith('event_mode_') || 
-    col.startsWith('event_map_') || 
-    col.startsWith('battle_mode_') || 
-    col.startsWith('battle_type_') || 
-    col.startsWith('battle_level_name_')
-));
+    return [X_train, X_test, y_train, y_test];
+};
 
-const X = df.map(row => features.map(feature => row[feature]));
-const y = df.map(row => row.battle_result);
+// Endpoint to predict the winner
+app.post('/predict', async (req, res) => {
+    const userInput = req.body;
 
-// Split the data
-function trainTestSplit(X, y, testSize = 0.2, randomState = 42) {
-    const shuffled = X.map((x, i) => ({ x, y: y[i] }))
-        .sort(() => Math.random() - 0.5);
-    const testLen = Math.floor(shuffled.length * testSize);
-    const test = shuffled.slice(0, testLen);
-    const train = shuffled.slice(testLen);
-    return {
-        X_train: train.map(item => item.x),
-        X_test: test.map(item => item.x),
-        y_train: train.map(item => item.y),
-        y_test: test.map(item => item.y)
-    };
-}
-
-const { X_train, X_test, y_train, y_test } = trainTestSplit(X, y);
-
-// Standardize the data
-function standardize(data) {
-    const mean = data.reduce((acc, val) => acc.map((v, i) => v + val[i]), new Array(data[0].length).fill(0))
-        .map(v => v / data.length);
-    const std = data.reduce((acc, val) => acc.map((v, i) => v + Math.pow(val[i] - mean[i], 2)), new Array(data[0].length).fill(0))
-        .map(v => Math.sqrt(v / (data.length - 1)));
-    return {
-        standardizedData: data.map(row => row.map((v, i) => (v - mean[i]) / std[i])),
-        mean,
-        std
-    };
-}
-
-const { standardizedData: X_train_scaled, mean, std } = standardize(X_train);
-const X_test_scaled = X_test.map(row => row.map((v, i) => (v - mean[i]) / std[i]));
-
-// Build the Neural Network Model
-const model = tf.sequential();
-model.add(tf.layers.dense({ units: 64, activation: 'relu', inputShape: [X_train_scaled[0].length] }));
-model.add(tf.layers.dense({ units: 32, activation: 'relu' }));
-model.add(tf.layers.dense({ units: 1, activation: 'sigmoid' }));
-
-// Compile the model
-model.compile({ optimizer: 'adam', loss: 'binaryCrossentropy', metrics: ['accuracy'] });
-
-// Train the model
-async function trainModel() {
-    await model.fit(tf.tensor2d(X_train_scaled), tf.tensor1d(y_train), {
-        epochs: 10,
-        batchSize: 32,
-        callbacks: {
-            onEpochEnd: (epoch, logs) => {
-                console.log(`Epoch ${epoch + 1}: loss = ${logs.loss.toFixed(4)}, accuracy = ${logs.acc.toFixed(4)}`);
-            }
-        }
-    });
-
-    // Evaluate the model
-    const [loss, accuracy] = model.evaluate(tf.tensor2d(X_test_scaled), tf.tensor1d(y_test));
-    console.log(`Model Accuracy: ${accuracy.toFixed(2)}`);
-}
-
-trainModel();
-
-function predictWinner(userInput) {
     // Prepare the input data for prediction
     const inputData = {
         battle_team1_brawler1: userInput.team1[0].brawler_id,
@@ -138,69 +106,18 @@ function predictWinner(userInput) {
         battle_team2_brawler3: userInput.team2[2].brawler_id,
     };
 
-    // One-hot encoding for event_map based on training data
-    features.forEach(feature => {
-        if (feature.startsWith('event_map_')) {
-            inputData[feature] = feature === `event_map_${userInput.event_map}` ? 1 : 0;
-        }
-    });
-
-    // Prepare input tensor
-    const inputTensor = tf.tensor2d([features.map(feature => inputData[feature] || 0)]);
-
-    // Standardize the input
-    const standardizedInput = inputTensor.sub(tf.tensor1d(mean)).div(tf.tensor1d(std));
-
+    // Create a DataFrame for input
+    const inputDf = features.map(f => inputData[f] || 0);
+    
     // Make prediction
-    const prediction = model.predict(standardizedInput);
-    return prediction.dataSync()[0] >= 0.5 ? "Win" : "Lose";
-}
-
-// Example user inputs
-const userInputs = [
-    {
-        event_map: 'Goldarm Gulch',
-        team1: [
-            { brawler_id: 16000021 },
-            { brawler_id: 16000015 },
-            { brawler_id: 16000019 }
-        ],
-        team2: [
-            { brawler_id: 16000057 },
-            { brawler_id: 16000046 },
-            { brawler_id: 16000054 }
-        ]
-    },
-    {
-        event_map: 'Deep Diner',
-        team1: [
-            { brawler_id: 16000061 },
-            { brawler_id: 16000012 },
-            { brawler_id: 16000018 }
-        ],
-        team2: [
-            { brawler_id: 16000011 },
-            { brawler_id: 16000054 },
-            { brawler_id: 16000007 }
-        ]
-    },
-    {
-        event_map: 'Sneaky Fields',
-        team1: [
-            { brawler_id: 16000004 },
-            { brawler_id: 16000008 },
-            { brawler_id: 16000010 }
-        ],
-        team2: [
-            { brawler_id: 16000011 },
-            { brawler_id: 16000030 },
-            { brawler_id: 16000020 }
-        ]
-    }
-];
-
-userInputs.forEach((input, index) => {
-    const result = predictWinner(input);
-    console.log(`The predicted outcome for match ${index + 1} is: ${result}`);
+    const prediction = model.predict(tf.tensor2d([inputDf]));
+    const result = (await prediction.array())[0][0] > 0.5 ? "Win" : "Lose";
+    res.json({ result });
 });
 
+// Load data and start the server
+loadData().then(() => {
+    app.listen(3001, () => {
+        console.log('Server is running on port 3001');
+    });
+});

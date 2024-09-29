@@ -263,7 +263,7 @@ input[type=text]:focus {
     border: 3px solid #ff5050;
 }
 
-input[type=submit] {
+button {
     width: 10%;
     background-color: #ff5050;
     color: white;
@@ -276,4 +276,25 @@ input[type=submit] {
     margin-right: auto;
     margin-top:10px;
     font-family: Elronmonospace;
+}
+
+#displayInput {
+    color: white;                 /* Text color */
+    font-family: Arial, sans-serif; /* Font family */
+    font-size: 16px;             /* Font size */
+    background-color: black;     /* Background color */
+    padding: 10px;               /* Padding around the text */
+    border-radius: 5px;          /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Optional shadow for depth */
+  }
+
+
+#input {
+    color: white;                 /* Text color */
+    font-family: Arial, sans-serif; /* Font family */
+    font-size: 16px;             /* Font size */
+    background-color: black;     /* Background color */
+    padding: 10px;               /* Padding around the text */
+    border-radius: 5px;          /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Optional shadow for depth */
 }

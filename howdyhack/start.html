@@ -1,0 +1,45 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Brawl Stars Player Fetcher</title>
+</head>
+<body>
+
+    <h1 id="start">Ready to win?</h1> 
+    <img src="images/zBrawl Stars Logo 2_starr_parkk.png" id = "start_icon">
+
+    <input type="text" id="playerTag" placeholder="Enter Player Tag" />
+    <button id="fetchPlayer">Submit</button>
+    <pre id="result"></pre>
+
+    <script>
+        document.getElementById('fetchPlayer').addEventListener('click', () => {
+            const playerTag = document.getElementById('playerTag').value;
+
+            fetch(`http://localhost:3000/api/player/${playerTag}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            });
+        });
+    </script>
+</body>
+</html>

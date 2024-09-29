@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brawl Coaching</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
+</head>
+
+
+
+<body>
+    <!--Navigation Bar + Title -->
+    <nav class = "navbar">
+        <div class="container_1">     
+        <h1>Brawl <br>Coaching</h1>
+        </div>
+        <div class="container_2">  
+       
+            <div class="main-menu">
+                <ul>
+                    <li>
+                        <a href="index.html">Home</a>
+                    </li>
+                    <li>
+                        <a href="contact.html">Contact Us</a>
+                    </li>
+                    <li>
+                        <a class="btn btn-light" href="start.html">
+                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i> Start Now
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!--Typing-->
+    <div class="container">
+          <p id="typing" class="typing" style="color:white;"></p>
+    </div>
+    
+    <!--Poco Image-->
+    <img src="images/poco_default_001.png" id="poco">
+
+    <img src="images/banner_Map_20.jpg" id="surge">
+
+    <script src="js/main.js"></script>
+
+    <!--Features-->
+    
+    <div class="padded-boxes">
+        
+        <section>
+            <h3 class="heading">Stat Tracking</h3>
+            <div class="padded">
+               Trophy count, recent increases in trophies, and last 20 games of 
+               win/lose
+            </div>
+        </section>
+        <section>
+            <h3 class="heading">Team Composition</h3>
+            <div class="padded">
+                With gathered data and statistics from previous matches, the 
+                chances of winning, based on opponents and team compositions, will be calculated. 
+            </div>
+        </section>
+        <section>
+            <h3 class="heading">Strategy</h3>
+            <div class="padded">
+                Brawl Coach will give tips and advice on how to approach
+                gameplay for the specific team combination, opponents, and map
+            </div>
+        </section>
+    </div>
+
+    <script>
+        var i = 0;
+        var txt = 'Grind efficiently. Reach goals. Win.';
+        var speed = 50;
+
+        function typeWriter() {
+             console.log("HELLO")
+        if (i < txt.length) {
+             document.getElementById("typing").innerHTML += txt.charAt(i);
+             i++;
+        setTimeout(typeWriter, speed);
+        }
+        }
+
+        typeWriter()
+
+
+
+    </script>
+</body>
+
+
+</html>

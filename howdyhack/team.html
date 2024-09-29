@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/morestyle.css">
+    <title>Select Your Brawlers</title>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html">Home</a>
+        <a href="contact.html">Contact Us</a>
+    </nav>
+
+    <h1 id="selectbrawl">Select Your Brawlers</h1>
+
+    <div class="team-selection">
+        <div class="team" id="team1">
+            <h2>Team 1</h2>
+            <div class="brawler-select" id="brawlerSelect1">
+                <!-- Brawlers will be dynamically added here -->
+            </div>
+            <h3>Selected Brawlers:</h3>
+            <div class="brawl" id="selectedBrawlers1"></div>
+        </div>
+        
+        <div class="team" id="team2">
+            <h2>Team 2</h2>
+            <div class="brawler-select" id="brawlerSelect2">
+                <!-- Brawlers will be dynamically added here -->
+            </div>
+            <h3>Selected Brawlers:</h3>
+            <div class="brawl" id="selectedBrawlers2"></div>
+        </div>
+    </div>
+
+    <button class="button" id="calculateButton">Calculate Predicted Winning Team</button>
+    <div id="predictionResult"></div>
+
+    <script>
+        const selectedBrawlers1 = [];
+        const selectedBrawlers2 = [];
+        let brawlers = []; // To store brawlers globally
+
+        // Function to render brawlers
+        async function renderBrawlers() {
+            try {
+                const response = await fetch('http://localhost:3000/api/brawlers'); // Update this URL based on your backend endpoint
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                brawlers = await response.json(); // Store brawlers globally
+                const brawlerSelect1 = document.getElementById('brawlerSelect1');
+                const brawlerSelect2 = document.getElementById('brawlerSelect2');
+
+                brawlers.forEach(brawler => {
+                    const brawlerIcon1 = createBrawlerIcon(brawler, 1);
+                    brawlerSelect1.appendChild(brawlerIcon1);
+
+                    const brawlerIcon2 = createBrawlerIcon(brawler, 2);
+                    brawlerSelect2.appendChild(brawlerIcon2);
+                });
+            } catch (error) {
+                console.error('Error fetching brawlers:', error);
+            }
+        }
+
+        // Function to create brawler icon
+        function createBrawlerIcon(brawler, team) {
+            const brawlerIcon = document.createElement('div');
+            brawlerIcon.classList.add('brawler-icon');
+            brawlerIcon.innerHTML = `
+                <img src="${brawler.image}" alt="${brawler.name}">
+                <div class="brawler-name">${brawler.name}</div>
+            `;
+            brawlerIcon.addEventListener('click', () => selectBrawler(brawler, team, brawlerIcon));
+            return brawlerIcon;
+        }
+
+        // Function to select or unselect a brawler
+        function selectBrawler(brawler, team, brawlerIcon) {
+            if (team === 1) {
+                const index = selectedBrawlers1.indexOf(brawler.id);
+                if (index === -1 && selectedBrawlers1.length < 3) {
+                    selectedBrawlers1.push(brawler.id);
+                    brawlerIcon.classList.add('selected'); // Add highlight
+                } else if (index !== -1) {
+                    selectedBrawlers1.splice(index, 1); // Remove from selection if already selected
+                    brawlerIcon.classList.remove('selected'); // Remove highlight
+                }
+                updateSelectedBrawlers(1);
+            } else {
+                const index = selectedBrawlers2.indexOf(brawler.id);
+                if (index === -1 && selectedBrawlers2.length < 3) {
+                    selectedBrawlers2.push(brawler.id);
+                    brawlerIcon.classList.add('selected'); // Add highlight
+                } else if (index !== -1) {
+                    selectedBrawlers2.splice(index, 1); // Remove from selection if already selected
+                    brawlerIcon.classList.remove('selected'); // Remove highlight
+                }
+                updateSelectedBrawlers(2);
+            }
+        }
+
+        // Function to update selected brawlers display
+        function updateSelectedBrawlers(team) {
+            const displayElement = document.getElementById(`selectedBrawlers${team}`);
+            displayElement.innerHTML = '';
+
+            const selectedBrawlers = team === 1 ? selectedBrawlers1 : selectedBrawlers2;
+            selectedBrawlers.forEach(id => {
+                const brawler = brawlers.find(b => b.id === id);
+                displayElement.innerHTML += `<span>${brawler.name}</span> `;
+            });
+        }
+
+        // Event listener for the calculate button
+        document.getElementById('calculateButton').addEventListener('click', () => {
+            calculatePredictedWinningTeam(selectedBrawlers1, selectedBrawlers2);
+        });
+
+        // Function for calculating the predicted winning team
+        async function calculatePredictedWinningTeam(team1, team2) {
+            const userInput = {
+                event_map: '15000010',  // Update this based on user selection or fixed value
+                team1: team1.map(id => ({ brawler_id: id })),
+                team2: team2.map(id => ({ brawler_id: id })),
+                
+            };
+            
+            try {
+                
+                const response = await fetch('http://localhost:3000/api/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userInput),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                document.getElementById('predictionResult').innerText = `Predicted Outcome: ${result.outcome}`;
+            } catch (error) {
+                console.error('Error predicting winning team:', error);
+                document.getElementById('predictionResult').innerText = 'Error predicting winning team.';
+            }
+        }
+
+        // Render the brawlers on page load
+        renderBrawlers();
+    </script>
+</body>
+</html>

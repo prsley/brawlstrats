@@ -4,6 +4,7 @@ import express from 'express';
 // import axios from 'axios'; 
 import  fetch from 'node-fetch'; // Ensure you have node-fetch installed
 import bodyParser from 'body-parser';
+
 //import * as tf from '@tensorflow/tfjs-node';
 
 const app = express();
@@ -113,6 +114,7 @@ app.post('/api/predict', (req, res) => {
     const { team1, team2, event_map } = req.body;
 
     const randomOutcome = Math.random() < 0.5 ? 'Team 1 Wins' : 'Team 2 Wins';
+    
 
     res.json({ outcome: randomOutcome });
 });

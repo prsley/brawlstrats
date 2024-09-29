@@ -295,3 +295,7 @@ ul {
 #email {
     padding-top: 20px;
 }
+
+.strategies {
+    margin-top: 50px; /* Adjust the value to increase or decrease the gap */
+}

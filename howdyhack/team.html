@@ -38,6 +38,12 @@
     <button class="button" id="calculateButton">Calculate Predicted Winning Team</button>
     <div id="predictionResult"></div>
 
+
+    <div class="strategies" id="strategies">
+        <h2 id="mapStrategiesHeader"></h2> <!-- Ensure this is present -->
+        <div id="strategyContent" class="strategy-content"></div>
+    </div>
+
     <script>
         const selectedBrawlers1 = [];
         const selectedBrawlers2 = [];
@@ -91,6 +97,7 @@
                     brawlerIcon.classList.remove('selected'); // Remove highlight
                 }
                 updateSelectedBrawlers(1);
+                
             } else {
                 const index = selectedBrawlers2.indexOf(brawler.id);
                 if (index === -1 && selectedBrawlers2.length < 3) {
@@ -131,7 +138,6 @@
             };
             
             try {
-                
                 const response = await fetch('http://localhost:3000/api/predict', {
                     method: 'POST',
                     headers: {
@@ -154,6 +160,90 @@
 
         // Render the brawlers on page load
         renderBrawlers();
+        const selectedMapId = localStorage.getItem('selectedMapId');
+        const selectedMapName = localStorage.getItem('selectedMapName');
+        // Function to display strategies based on selected map
+        console.log(selectedMapId)
+        console.log(selectedMapName)
+
+        function displayMapStrategies(mapName) {
+            const strategyDiv = document.getElementById('strategyContent');
+            const headerDiv = document.getElementById('mapStrategiesHeader');
+            let strategyText = "";
+            switch (mapName) {
+                case "Hard Rock Mine":
+                    strategyText = "Open map that makes long-range brawlers (Piper, Belle, Brock) a winning factor. " +
+                        "Prioritize taking control of the gem mine in the center. " +
+                        "Brawlers with high damage output or area control (like Barley or Poco) can dominate this area. " +
+                        "Use the side paths to flank opponents. Brawlers with high mobility (like Leon or Spike) can catch enemies off guard. " +
+                        "Use walls for cover when retreating or ambushing enemies. " +
+                        "Be aware of brawlers like Rico or Carl that can exploit wall mechanics. " +
+                        "If gadget and star power use are unlocked, make sure to properly utilize them. " +
+                        "For instance, Brock’s super can be useful for destroying enemy walls and opening up the map further. " +
+                        "Brock’s gadget can be used to escape from tanks or dangerous situations.";
+                    break;
+        
+                case "Duo/Solo Final Four":
+                    strategyText = "Start by collecting power cubes from boxes around the edges. " +
+                        "Avoid engaging other players until you have a few cubes to boost your health and damage. " +
+                        "In solo showdown, this is especially important as you do not have a teammate to respawn you. " +
+                        "In duo showdown, you can be more aggressive in the early game. " +
+                        "Mid-range brawlers would likely fare best in this map due to its walls and openness. " +
+                        "Mobile tanks can also be a good pick if you are able to dodge attacks. " +
+                        "Good picks on this map include Meg, Draco, Chester, Shelly, Ash, Moe.";
+                    break;
+        
+                case "Pinball Dreams":
+                    strategyText = "The open middle of the map makes it good for snipers (Piper, Belle, Brock, Bea, Mandy) " +
+                        "and also an easy place to get killed. Make sure to dodge shots and move quickly if you are standing in that danger zone. " +
+                        "For the right and left lanes, brawlers like EMZ, Frank, Crow, Nita, Tara, and Primo are all very good choices. " +
+                        "This map possesses lots of tank counters so beware of utilizing a healer-tank-tank combo. " +
+                        "As always, Jessie is a solid choice on maps. However, she does not have the ability to kill a tank like Frank on this map.";
+                    break;
+        
+                case "Hot Potato":
+                    strategyText = "Since this is a heist mode, high damage brawlers are always a go-to. " +
+                        "Since the main lane is open, brawlers like Spike, Jessie, Moe, Colt who do high damage and have relatively long range are good for the bush area. " +
+                        "For the right and left lane, tanks and throwers are good choices. Utilize your supers effectively. " +
+                        "For example, throw Jessie's turret in the vicinity of the safe and utilize the bounce super to maximize damage on both the safe and enemy brawlers. " +
+                        "Coordinate with your team to time pushes together. Engaging as a group can overwhelm the enemy and allow you to deal significant damage to their safe.";
+                    break;
+        
+                case "Goldarm Clutch":
+                    strategyText = "With the high number of walls, throwers (Tick, Grom, Mr. P, Sprout, Barley) are a must-have. " +
+                        "Hank is also a solid choice. Brawlers like Moe can be very useful too. " +
+                        "For long-range brawlers, Rico and Colt are good choices because they are long range and can be useful for peaking. " +
+                        "If the star power and gadgets are properly used, the bouncing of Rico’s shots and Colt’s wall-breaking mechanism will open up the map creating a greater map advantage.";
+                    break;
+        
+                case "Meadow of the Crane":
+                    strategyText = "Top picks are Meg, Moe, Darryl, Lola, and Ash for an intense 1v1. " +
+                        "High health coupled with high damage are necessities. As the border shrinks and the deadly green gas closes, " +
+                        "semi-close and mid-range high damage brawlers are very useful. " +
+                        "Colt and Spike can be useful for punishing blunders quickly and Leon is always a stealthy choice. " +
+                        "Keep track of your opponent’s movements and anticipate their actions. Knowing when to engage and when to retreat can make a huge difference.";
+                    break;
+        
+                case "Flying Fantasies":
+                    strategyText = "Start by collecting power cubes from boxes around the edges. " +
+                        "Avoid engaging other players until you have a few cubes to boost your health and damage. " +
+                        "In solo showdown, this is especially important as you do not have a teammate to respawn you. " +
+                        "In duo showdown, you can be more aggressive in the early game. " +
+                        "Mid-range brawlers would likely fare best in this map due to its walls and openness. " +
+                        "Mobile tanks can also be a good pick if you are able to dodge attacks. " +
+                        "Good picks on this map include Meg, Draco, Chester, Shelly, Ash, Moe.";
+                    break;
+        
+                default:
+                    strategyText = "No strategies available for this map.";
+                    break;
+            }
+            // Set the header and content
+            headerDiv.textContent = `Map Strategies (${selectedMapName})`;
+            strategyDiv.innerHTML = strategyText;
+        }
+        displayMapStrategies(selectedMapName); // Call the strategy display function
     </script>
+
 </body>
 </html>

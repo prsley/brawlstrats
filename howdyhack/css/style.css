@@ -1,0 +1,279 @@
+* { 
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    font-family: Elronmonospace;
+    line-height: 1.5;
+    background: black;
+
+}
+
+a {
+    text-decoration: none;
+    color: white;
+
+}
+
+
+  
+ul {
+    list-style: none;
+}
+
+img {
+    max-width: 100%;
+}
+
+/* Navbar */
+.navbar {
+    background: black; 
+    padding: 20px;
+    display: flex;
+    min-width: 100vw;
+}
+
+.navbar .container_1 {
+    justify-content: left;
+    align-items: left;
+    font-size: 100px;
+    padding-left: 40px;
+    padding-top: 30px;
+}
+
+.navbar .container_2 {
+    justify-content: right;
+    align-items: right;
+    padding-left: 420px;
+    font-size: 16px;
+}
+
+.navbar .main-menu ul {
+    display: flex;
+    gap: 1rem;
+}
+
+.navbar ul li a {
+    padding: 10px 20px;
+    display: block;
+    font-weight: 600;
+    transition: 0.5s;
+}
+
+a:hover {
+    background-color: rgb(255, 187, 29);
+}
+
+
+@font-face {
+    font-family: Blacklisted;
+    src: url(Blacklisted.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: Elronmonospace;
+    src: url(Elronmonospace.ttf) format('truetype');
+}
+
+h1 {
+    font-family: Blacklisted;
+    letter-spacing: 5px;
+    line-height: 190px;
+    text-shadow: 2px 2px 7px rgb(255, 126, 126);
+    color:white;
+}
+
+li {
+    font-family: Elronmonospace;
+    color: white;
+}
+
+.btn {
+    display: inline-block;
+    background:rgb(255, 81, 81);
+}
+
+/* Utility Classes */
+.container {
+    padding-left: 55px
+}
+
+.container-sm {
+    max-width: 800px;
+    margin: 0 auto;
+    padding:0 15px;
+}
+
+#poco {
+    width:50%;
+    position: absolute;
+    top: 35px; 
+    left: 770px;
+    filter: drop-shadow(-10px, -10px, 10px pink);
+}
+
+
+#win {
+    color: rgb(255, 187, 29);
+    padding-left: 55px;
+    font-size: 40px;
+}
+
+
+.column {
+    float: left;
+    width: 33.33%;
+  }
+  
+  /* Clear floats after the columns */
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+
+/* Typing */
+  @keyframes typing {
+    from { width: 100% }
+    to { width: 0 }
+    
+}
+
+.container {
+    display: flex;
+  font-family: Elronmonospace;
+  font-size: 35px;
+}
+
+
+.hiders {
+  margin: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.hiders p {
+  color:white;
+  position: relative; 
+  clear: both; 
+  margin: 0;
+  float: right; /* makes animation go left-to-right */
+  width:0; /* graceful degradation: if animation doesn't work, these are invisible by default */
+  background: black; /* same as page background */
+  animation: typing 6s steps(100, end);
+  animation-fill-mode: both;  /* load first keyframe on page load, leave on last frame at end */
+}
+
+#surge {
+    width:55%;
+    position: absolute;
+    top: 520px; 
+    left: 60px;
+    filter: drop-shadow(-10px, -10px, 10px pink);
+}
+
+h2 {
+    display:flex;
+    text-align: center;
+    font-family: Blacklisted;
+    position:absolute;
+    top: 900px;
+    left: 672px;
+    font-size: 50px;
+    color:white;
+    letter-spacing: 2px;
+}
+
+/* container */
+.padded-boxes {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    margin-top: 400px;
+    gap:50px;
+    margin-bottom: 100px;
+}
+
+/* boxes */
+.padded-boxes > * {
+    align-content: center;
+    width:100%;
+    background:#eee;
+    border-radius:.4rem;
+}
+
+/* headings */
+.padded-boxes .heading {
+    background:rgb(255, 198, 66);
+    align-content: center;
+    justify-content: center;
+    text-align: center;
+    margin:0px;
+    padding:1rem;
+    border-top-left-radius:.4rem;
+    border-top-right-radius:.4rem;
+}
+
+/* padded content */
+.padded-boxes .padded {
+    padding:.4rem 2rem;
+}
+
+/* tablet breakpoint */
+@media (min-width:768px) {
+    .padded-boxes > * {
+        width:calc((90% - 4rem) / 3);
+    }
+}
+
+#start {
+    text-align: center;
+    font-size: 100px;
+    margin-top: 140px;
+}
+
+#start_icon {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 20%;
+    
+}
+
+
+input[type=text] {
+    width: 20%;
+    padding: 12px 20px;
+    
+    box-sizing: border-box;
+    border: 3px solid #ccc;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+  
+input[type=text]:focus {
+    border: 3px solid #ff5050;
+}
+
+input[type=submit] {
+    width: 10%;
+    background-color: #ff5050;
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top:10px;
+    font-family: Elronmonospace;
+}

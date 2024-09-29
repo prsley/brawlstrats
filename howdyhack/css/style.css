@@ -276,6 +276,7 @@ button {
     margin-right: auto;
     margin-top:10px;
     font-family: Elronmonospace;
+<<<<<<< Updated upstream
 }
 
 #displayInput {
@@ -298,3 +299,6 @@ button {
     border-radius: 5px;          /* Rounded corners */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Optional shadow for depth */
 }
+=======
+}
+>>>>>>> Stashed changes

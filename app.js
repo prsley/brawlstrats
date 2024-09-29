@@ -16,7 +16,7 @@ app.use(express.static('public')); // Serve static files from the 'public' direc
 app.get('/api/player/:tag', async (req, res) => {
     const playerTag = req.params.tag;
     const url = `https://api.brawlstars.com/v1/players/%23${playerTag}`;
-    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6Ijg0MDE0ZjI4LTBmNzMtNDRhYy1iMDc3LTlmYTAwODVmNjkwZSIsImlhdCI6MTcyNzU4ODU2Mywic3ViIjoiZGV2ZWxvcGVyL2Y1N2IyMGRjLTA1ZDYtODBmMy00ZGU2LWRkMGY0OWI3NmJkMSIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTY1LjkxLjEzLjIwMSIsIjE5OC45MC4xMDkuMTE2Il0sInR5cGUiOiJjbGllbnQifV19.1ONmPvru7-vJeV_kgTxI8FeRkfSOpo778Rpw4TD8FQnQ6V2Tiue-6VdPlQRfWZd8u7pTUaP27dc99hZ7WH2y3w';
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjU3M2EwNzQ2LWRlMGQtNGViNy04MTM5LTQxMmYzYjU4OGRkNyIsImlhdCI6MTcyNzU3NTc1OCwic3ViIjoiZGV2ZWxvcGVyL2Y1N2IyMGRjLTA1ZDYtODBmMy00ZGU2LWRkMGY0OWI3NmJkMSIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTY1LjkxLjEzLjIwMSJdLCJ0eXBlIjoiY2xpZW50In1dfQ.te-3gHzZ1wGL2tJrSmP5a6uHGhCSJCn0vIcb70ZZSVg1sry_l8AC9ahStfRel1iV5DxQDHFg5FJz88Er0PCKdg';
 
     try {
         const response = await fetch(url, {

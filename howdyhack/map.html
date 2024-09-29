@@ -3,79 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/morestyle.css">
     <title>Brawl Stars Player Stats</title>
-    <style>
-        body {
-            font-family: Elronmonospace;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            background-color: #121212; /* Black background */
-            color: #fff;
-        }
-        h1 {
-            font-size:100px;
-            font-family: Elronmonospace;
-            color: #ffcc00; /* Bright yellow for welcome message */
-        }
-        table {
-            width: 80%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); /* Light shadow for table */
-        }
-        th, td {
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2); /* Semi-transparent border */
-        }
-        th {
-            background: linear-gradient(90deg, #ffcc00, #ff8800); /* Gradient for headers */
-            color: #121212;
-        }
-        td {
-            background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background for rows */
-            color: #fff; /* White text for table cells */
-        }
-        tr:nth-child(even) td {
-            background-color: rgba(255, 255, 255, 0.15); /* Different background for even rows */
-        }
-        tr:hover td {
-            background-color: rgba(255, 255, 255, 0.25);
-            transition: background-color 0.3s ease;
-        }
 
-        /* Styles for map selection icons */
-        .map-selection {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
-        .map-icon {
-            margin: 10px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            text-align: center; /* Center text below icons */
-        }
-        .map-icon:hover {
-            transform: scale(1.1);
-        }
-        .map-icon img {
-            width: 20vw; /* Width is 10% of the viewport width */
-            height: auto; /* Maintain aspect ratio */
-            max-width: 250px; /* Optional: Set a maximum width */
-            border-radius: 10px;
-        }
-        .map-name {
-            margin-top: 5px;
-            color: #ffcc00; /* Bright yellow for map name */
-        }
-    </style>
 </head>
 <body>
 
     <h1 id="welcomeMessage">Welcome, Player!</h1>
-
+    <p>Select map out of the current rotation:</p>
     <!-- Map Selection Icons -->
     <div class="map-selection" id="mapSelection">
         <!-- Map icons will be dynamically added here -->

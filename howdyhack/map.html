@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Next Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 20px;
+        }
+        .player-info {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #fff;
+            margin: 20px auto;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Map</h1>
+    <p id="input">Your input: <span id="displayInput"></span></p>
+    <div id="playerData" class="player-info" style="display:none;"></div>
+    <p id="error" style="color: red;"></p>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        
+
+       
+        // Retrieve the stored value
+        const storedValue = localStorage.getItem('userInput');
+        document.getElementById('displayInput').innerText = storedValue || 'No input provided.';
+        
+        console.log(storedValue);
+        
+        // Function to fetch player data
+        async function fetchPlayerData(playerId) {
+            const apiKey = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjU3M2EwNzQ2LWRlMGQtNGViNy04MTM5LTQxMmYzYjU4OGRkNyIsImlhdCI6MTcyNzU3NTc1OCwic3ViIjoiZGV2ZWxvcGVyL2Y1N2IyMGRjLTA1ZDYtODBmMy00ZGU2LWRkMGY0OWI3NmJkMSIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTY1LjkxLjEzLjIwMSJdLCJ0eXBlIjoiY2xpZW50In1dfQ.te-3gHzZ1wGL2tJrSmP5a6uHGhCSJCn0vIcb70ZZSVg1sry_l8AC9ahStfRel1iV5DxQDHFg5FJz88Er0PCKdg'; // Replace with your Brawl Stars API key
+            const url = `https://api.brawlstars.com/v1/players/%23${playerId}`;
+            console.log(url)
+            try {
+                fetch(url, {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+    }
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
+})
+.then(data => console.log(data))
+.catch(error => console.error('There was a problem with the fetch operation:', error));
+
+                // const data = await response
+                // if (!data.ok) {
+                //     console.log(response)
+                //     throw new Error(response);
+                // }
+                // displayPlayerData(data);
+            } catch (error) {
+                document.getElementById('error').innerText = error.message; 
+            }
+
+            // if (!response.ok) {
+            //      const errorData = await response.json();
+            //     throw new Error(`Error: ${errorData.message}`);
+            // }
+
+        }
+
+        if (storedValue) {
+            fetchPlayerData(storedValue);
+        }
+
+        // Function to display player data
+        function displayPlayerData(data) {
+            const playerDataDiv = document.getElementById('playerData');
+            playerDataDiv.style.display = 'block'; // Show player data div
+
+            playerDataDiv.innerHTML = `
+                <h2>${data.name}</h2>
+                <img src="${data.icon}" alt="${data.name}" />
+                <p>Trophies: ${data.trophies}</p>
+                <p>Level: ${data.expLevel}</p>
+            `;
+        }
+
+        // Fetch player data if a valid ID is stored
+        
+
+    </script>
+</body>
+</html>

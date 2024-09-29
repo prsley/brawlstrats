@@ -92,6 +92,7 @@ th {
 td {
     background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background for rows */
     color: #fff; /* White text for table cells */
+    font-family: Elronmonospace;
 }
 tr:nth-child(even) td {
     background-color: rgba(255, 255, 255, 0.15); /* Different background for even rows */

@@ -8,11 +8,10 @@
 </head>
 <body>
 
-    <nav class = "navbar"></nav>
+    <nav class="navbar">
         <a href="index.html">Home</a>
         <a href="contact.html">Contact Us</a>
     </nav>
-
 
     <h1 id="selectbrawl">Select Your Brawlers</h1>
 
@@ -23,7 +22,7 @@
                 <!-- Brawlers will be dynamically added here -->
             </div>
             <h3>Selected Brawlers:</h3>
-            <div class="brawl"  id="selectedBrawlers1"></div>
+            <div class="brawl" id="selectedBrawlers1"></div>
         </div>
         
         <div class="team" id="team2">
@@ -37,6 +36,7 @@
     </div>
 
     <button class="button" id="calculateButton">Calculate Predicted Winning Team</button>
+    <div id="predictionResult"></div>
 
     <script>
         const selectedBrawlers1 = [];
@@ -56,27 +56,27 @@
                 const brawlerSelect2 = document.getElementById('brawlerSelect2');
 
                 brawlers.forEach(brawler => {
-                    const brawlerIcon1 = document.createElement('div');
-                    brawlerIcon1.classList.add('brawler-icon');
-                    brawlerIcon1.innerHTML = `
-                        <img src="${brawler.image}" alt="${brawler.name}">
-                        <div class="brawler-name">${brawler.name}</div>
-                    `;
-                    brawlerIcon1.addEventListener('click', () => selectBrawler(brawler, 1, brawlerIcon1));
+                    const brawlerIcon1 = createBrawlerIcon(brawler, 1);
                     brawlerSelect1.appendChild(brawlerIcon1);
 
-                    const brawlerIcon2 = document.createElement('div');
-                    brawlerIcon2.classList.add('brawler-icon');
-                    brawlerIcon2.innerHTML = `
-                        <img src="${brawler.image}" alt="${brawler.name}">
-                        <div class="brawler-name">${brawler.name}</div>
-                    `;
-                    brawlerIcon2.addEventListener('click', () => selectBrawler(brawler, 2, brawlerIcon2));
+                    const brawlerIcon2 = createBrawlerIcon(brawler, 2);
                     brawlerSelect2.appendChild(brawlerIcon2);
                 });
             } catch (error) {
                 console.error('Error fetching brawlers:', error);
             }
+        }
+
+        // Function to create brawler icon
+        function createBrawlerIcon(brawler, team) {
+            const brawlerIcon = document.createElement('div');
+            brawlerIcon.classList.add('brawler-icon');
+            brawlerIcon.innerHTML = `
+                <img src="${brawler.image}" alt="${brawler.name}">
+                <div class="brawler-name">${brawler.name}</div>
+            `;
+            brawlerIcon.addEventListener('click', () => selectBrawler(brawler, team, brawlerIcon));
+            return brawlerIcon;
         }
 
         // Function to select or unselect a brawler
@@ -118,16 +118,38 @@
 
         // Event listener for the calculate button
         document.getElementById('calculateButton').addEventListener('click', () => {
-            // Call the existing function to calculate the predicted winning team
             calculatePredictedWinningTeam(selectedBrawlers1, selectedBrawlers2);
         });
 
-        // Placeholder function for calculating the predicted winning team
-        function calculatePredictedWinningTeam(team1, team2) {
-            console.log('Calculating winning team...');
-            console.log('Team 1:', team1);
-            console.log('Team 2:', team2);
-            alert('Winning team calculated!'); // Replace this with your actual logic
+        // Function for calculating the predicted winning team
+        async function calculatePredictedWinningTeam(team1, team2) {
+            const userInput = {
+                event_map: '15000010',  // Update this based on user selection or fixed value
+                team1: team1.map(id => ({ brawler_id: id })),
+                team2: team2.map(id => ({ brawler_id: id })),
+                
+            };
+            
+            try {
+                
+                const response = await fetch('http://localhost:3000/api/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userInput),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                document.getElementById('predictionResult').innerText = `Predicted Outcome: ${result.outcome}`;
+            } catch (error) {
+                console.error('Error predicting winning team:', error);
+                document.getElementById('predictionResult').innerText = 'Error predicting winning team.';
+            }
         }
 
         // Render the brawlers on page load

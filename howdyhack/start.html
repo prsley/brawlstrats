@@ -1,14 +1,37 @@
-<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brawl Stars Player Fetcher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #333;
+        }
+        #playerTag {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        #fetchPlayer {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
-    <h1 id="start">Ready to win?</h1> 
-    <img src="images/zBrawl Stars Logo 2_starr_parkk.png" id = "start_icon">
+    <h1>Brawl Stars Player Fetcher</h1>
 
     <input type="text" id="playerTag" placeholder="Enter Player Tag" />
-    <button id="fetchPlayer">Submit</button>
-    <pre id="result"></pre>
+    <button id="fetchPlayer">Fetch Player Data</button>
 
     <script>
         document.getElementById('fetchPlayer').addEventListener('click', () => {
@@ -27,11 +50,13 @@
                 return response.json();
             })
             .then(data => {
-                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+                // Store the player data in localStorage and redirect to the stats page
+                localStorage.setItem('playerData', JSON.stringify(data));
+                window.location.href = 'map.html'; // Redirect to stats.html
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
-                document.getElementById('result').textContent = 'Error: ' + error.message;
+                alert('Error: ' + error.message);
             });
         });
     </script>

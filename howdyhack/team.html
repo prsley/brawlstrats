@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Brawlers</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e1e1e;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #ffcc00;
+            font-size: 40px;
+        }
+
+        .team-selection {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .team {
+            margin: 0 20px;
+            padding: 20px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.3);
+            flex: 1;
+        }
+
+        .team h2 {
+            font-size: 30px;
+            color: #ffcc00;
+        }
+
+        .brawler-select {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .brawler-icon {
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-align: center;
+            border: 2px solid transparent; /* Initial border */
+        }
+
+        .brawler-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .brawler-icon.selected {
+            border: 2px solid #ffcc00; /* Highlight border when selected */
+        }
+
+        .brawler-icon img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+        }
+
+        .brawler-name {
+            margin-top: 5px;
+            color: #ffcc00;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: #ffcc00;
+            color: #1e1e1e;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #ff8800;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Select Your Brawlers</h1>
+
+    <div class="team-selection">
+        <div class="team" id="team1">
+            <h2>Team 1</h2>
+            <div class="brawler-select" id="brawlerSelect1">
+                <!-- Brawlers will be dynamically added here -->
+            </div>
+            <h3>Selected Brawlers:</h3>
+            <div id="selectedBrawlers1"></div>
+        </div>
+        
+        <div class="team" id="team2">
+            <h2>Team 2</h2>
+            <div class="brawler-select" id="brawlerSelect2">
+                <!-- Brawlers will be dynamically added here -->
+            </div>
+            <h3>Selected Brawlers:</h3>
+            <div id="selectedBrawlers2"></div>
+        </div>
+    </div>
+
+    <button class="button" id="calculateButton">Calculate Predicted Winning Team</button>
+
+    <script>
+        const selectedBrawlers1 = [];
+        const selectedBrawlers2 = [];
+        let brawlers = []; // To store brawlers globally
+
+        // Function to render brawlers
+        async function renderBrawlers() {
+            try {
+                const response = await fetch('http://localhost:3000/api/brawlers'); // Update this URL based on your backend endpoint
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                brawlers = await response.json(); // Store brawlers globally
+                const brawlerSelect1 = document.getElementById('brawlerSelect1');
+                const brawlerSelect2 = document.getElementById('brawlerSelect2');
+
+                brawlers.forEach(brawler => {
+                    const brawlerIcon1 = document.createElement('div');
+                    brawlerIcon1.classList.add('brawler-icon');
+                    brawlerIcon1.innerHTML = `
+                        <img src="${brawler.image}" alt="${brawler.name}">
+                        <div class="brawler-name">${brawler.name}</div>
+                    `;
+                    brawlerIcon1.addEventListener('click', () => selectBrawler(brawler, 1, brawlerIcon1));
+                    brawlerSelect1.appendChild(brawlerIcon1);
+
+                    const brawlerIcon2 = document.createElement('div');
+                    brawlerIcon2.classList.add('brawler-icon');
+                    brawlerIcon2.innerHTML = `
+                        <img src="${brawler.image}" alt="${brawler.name}">
+                        <div class="brawler-name">${brawler.name}</div>
+                    `;
+                    brawlerIcon2.addEventListener('click', () => selectBrawler(brawler, 2, brawlerIcon2));
+                    brawlerSelect2.appendChild(brawlerIcon2);
+                });
+            } catch (error) {
+                console.error('Error fetching brawlers:', error);
+            }
+        }
+
+        // Function to select or unselect a brawler
+        function selectBrawler(brawler, team, brawlerIcon) {
+            if (team === 1) {
+                const index = selectedBrawlers1.indexOf(brawler.id);
+                if (index === -1 && selectedBrawlers1.length < 3) {
+                    selectedBrawlers1.push(brawler.id);
+                    brawlerIcon.classList.add('selected'); // Add highlight
+                } else if (index !== -1) {
+                    selectedBrawlers1.splice(index, 1); // Remove from selection if already selected
+                    brawlerIcon.classList.remove('selected'); // Remove highlight
+                }
+                updateSelectedBrawlers(1);
+            } else {
+                const index = selectedBrawlers2.indexOf(brawler.id);
+                if (index === -1 && selectedBrawlers2.length < 3) {
+                    selectedBrawlers2.push(brawler.id);
+                    brawlerIcon.classList.add('selected'); // Add highlight
+                } else if (index !== -1) {
+                    selectedBrawlers2.splice(index, 1); // Remove from selection if already selected
+                    brawlerIcon.classList.remove('selected'); // Remove highlight
+                }
+                updateSelectedBrawlers(2);
+            }
+        }
+
+        // Function to update selected brawlers display
+        function updateSelectedBrawlers(team) {
+            const displayElement = document.getElementById(`selectedBrawlers${team}`);
+            displayElement.innerHTML = '';
+
+            const selectedBrawlers = team === 1 ? selectedBrawlers1 : selectedBrawlers2;
+            selectedBrawlers.forEach(id => {
+                const brawler = brawlers.find(b => b.id === id);
+                displayElement.innerHTML += `<span>${brawler.name}</span> `;
+            });
+        }
+
+        // Event listener for the calculate button
+        document.getElementById('calculateButton').addEventListener('click', () => {
+            // Call the existing function to calculate the predicted winning team
+            calculatePredictedWinningTeam(selectedBrawlers1, selectedBrawlers2);
+        });
+
+        // Placeholder function for calculating the predicted winning team
+        function calculatePredictedWinningTeam(team1, team2) {
+            console.log('Calculating winning team...');
+            console.log('Team 1:', team1);
+            console.log('Team 2:', team2);
+            alert('Winning team calculated!'); // Replace this with your actual logic
+        }
+
+        // Render the brawlers on page load
+        renderBrawlers();
+    </script>
+</body>
+</html>
